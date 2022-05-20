@@ -273,6 +273,15 @@ sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
   // 6
   return ((sdi12timer_t)(micros() >> 6));
 }
+#elif defined(ARDUINO_ARCH_STM32F1)
+//TODO: this is just copied from above and is not correct for STM32F1!!!
+void         SDI12Timer::configSDI12TimerPrescale(void) {}
+void         SDI12Timer::resetSDI12TimerPrescale(void) {}
+sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
+  // Its a one microsecond clock but we want 64uS ticks so divide by 64 i.e. right shift
+  // 6
+  return ((sdi12timer_t)(micros() >> 6));
+}
 // Unknown board
 #else
 #error "Please define your board timer and pins"

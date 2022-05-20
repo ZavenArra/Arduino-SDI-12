@@ -386,6 +386,46 @@ class SDI12Timer {
 #define RX_WINDOW_FUDGE 2
 
 // Unknown board
+#elif defined(ARDUINO_ARCH_STM32F1)
+//TODO: this is just copied from above and is not correct for STM32F1!!!
+
+  /**
+   * @brief Read the processor micros and right shift 6 bits (ie, divide by 64) to get a
+   * 64µs tick.
+   *
+   * @note  The ESP32 and ESP8266 are fast enough processors that they can take the time
+   * to read the core 'micros()' function still complete the other processing needed on
+   * the serial bits.  All of the other processors using the Arduino core also have the
+   * micros function, but the rest are not fast enough to waste the processor cycles to
+   * use the micros function and must use the faster assembly macros to read the
+   * processor timer directly.
+   *
+   * @return **sdi12timer_t** The current processor micros
+   */
+  sdi12timer_t SDI12TimerRead(void);
+
+/**
+ * @brief The number of "ticks" of the timer that occur within the timing of one bit
+ * at the SDI-12 baud rate of 1200 bits/second.
+ *
+ * 48MHz / 3 pre-prescaler = 16MHz
+ * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
+ * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
+ */
+#define TICKS_PER_BIT 13
+/**
+ * @brief The number of "ticks" of the timer per SDI-12 bit, shifted by 2^10.
+ *
+ * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
+ */
+#define BITS_PER_TICK_Q10 79
+/**
+ * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
+ * uneven tick increments get rounded up.
+ *
+ * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
+ */
+#define RX_WINDOW_FUDGE 2
 #else
 #error "Please define your board timer and pins"
 #endif

@@ -191,6 +191,38 @@ enum LookaheadMode {
  * processor timer directly.
  */
 #define READTIME sdi12timer.SDI12TimerRead()
+#elif defined(ARDUINO_ARCH_STM32F1)
+//TODO: this is just copied from above and not yet correct for STM32F1 boards!!!
+
+/**
+ * @brief This enumeration provides the lookahead options for parseInt(), parseFloat().
+ *
+ * The rules set out here are used until either the first valid character is found or a
+ * time out occurs due to lack of input.
+ *
+ * This enum is part of the Stream parent class, but is missing from the ESP8266 and
+ * ESP32 cores.
+ */
+enum LookaheadMode {
+  /** All invalid characters are ignored. */
+  SKIP_ALL,
+  /** Nothing is skipped, and the stream is not touched unless the first waiting
+     character is valid. */
+  SKIP_NONE,
+  /** Only tabs, spaces, line feeds & carriage returns are skipped.*/
+  SKIP_WHITESPACE
+};
+/**
+ * @brief The function or macro used to read the clock timer value.
+ *
+ * @note  The ESP32 and ESP8266 are fast enough processors that they can take the
+ * time to read the core 'micros()' function still complete the other processing needed
+ * on the serial bits.  All of the other processors using the Arduino core also have the
+ * micros function, but the rest are not fast enough to waste the processor cycles to
+ * use the micros function and must use the faster assembly macros to read the
+ * processor timer directly.
+ */
+#define READTIME sdi12timer.SDI12TimerRead()
 #else
 /**
  * @brief The function or macro used to read the clock timer value.
